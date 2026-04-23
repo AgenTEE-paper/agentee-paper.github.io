@@ -1,0 +1,134 @@
+---
+title: "AgenTEE: Confidential LLM Agent Execution on Edge Devices"
+authors:
+  - name: Sina Abdollahi
+    notes: ["*"]
+  - name: Mohammad M Maheri
+    notes: ["*"]
+  - name: Javad Forough
+    notes: ["*"]
+  - name: Amir Al Sadi
+    notes: ["*"]
+  - name: Josh Millar
+    notes: ["*"]
+  - name: David Kotz
+    notes: ["†"]
+  - name: Marios Kogias
+    notes: ["*"]
+  - name: Hamed Haddadi
+    notes: ["*"]
+conference: "Sixth European Workshop on Machine Learning and Systems (EuroMLSys '26), April 27–30, 2026, Edinburgh, Scotland, UK"
+notes:
+  - symbol: "*"
+    text: Imperial College London, London, United Kingdom
+  - symbol: "†"
+    text: Dartmouth College, Hanover, NH, USA
+links:
+  - name: Paper
+    url: https://arxiv.org/pdf/2604.18231
+    icon: academicons:arxiv
+theme: light
+favicon: favicon.svg
+description: "AgenTEE deploys confidential LLM agent pipelines on edge devices using Arm CCA, achieving near-native performance with less than 5.15% overhead."
+thumbnail: screenshot-light.png
+---
+
+import HighlightedSection from "./components/HighlightedSection.astro";
+import Figure from "./components/Figure.astro";
+import Picture from "./components/Picture.astro";
+
+<HighlightedSection>
+
+## Abstract
+
+Large Language Model agents enable powerful automation but create expansive attack surfaces through integration with non-deterministic models and third-party services. While cloud deployments dominate currently, edge execution is increasingly common to reduce latency and enhance privacy. However, securing complex agent pipelines on edge devices remains challenging when protecting proprietary assets and sensitive runtime state across heterogeneous, potentially compromised platforms.
+
+We present **AgenTEE**, a system that deploys confidential agent pipelines on edge devices. AgenTEE places the agent runtime, inference engine, and third-party applications into independently attested **confidential virtual machines (cVMs)** and mediates all interaction through explicit, verifiable communication channels. Built on **Arm Confidential Compute Architecture (CCA)**, AgenTEE enforces strong system-level isolation of sensitive assets and runtime state. Our evaluation demonstrates practical feasibility, achieving near-native performance with **less than 5.15% overhead** compared to commodity OS multi-process deployments.
+
+</HighlightedSection>
+
+## Motivation
+
+LLM agents autonomously reason over instructions, plan multi-step tasks, and interact with external services. As these agents increasingly run locally on edge devices — improving privacy and reducing latency — they face significantly broader attack surfaces than traditional software. They require extensive third-party service access and handle sensitive user data, while the core LLM cannot reliably distinguish trusted system instructions from untrusted inputs.
+
+Current OS-level isolation (multi-processing, syscall filtering) is inadequate when workflows include proprietary assets like specialized model weights or confidential agent code. AgenTEE addresses this gap by leveraging **Arm Confidential Compute Architecture (CCA)**, which enables general-purpose confidential VMs (realms) in hardware-isolated memory, protected from the OS and hypervisor.
+
+### Assets Requiring Protection
+
+AgenTEE identifies three classes of sensitive assets that require hardware-level protection:
+
+- **Agent code and prompts:** Proprietary orchestration logic, prompt templates, and decision rules. Even partial leakage significantly increases the feasibility of prompt injection and data exfiltration attacks.
+- **Inference engine:** Model weights (proprietary or integrity-sensitive) and the KV cache, which encodes processed context and can leak system prompts or be manipulated to steer model behavior.
+- **Third-party applications:** API keys, database credentials, authentication tokens, and proprietary business logic that must be protected even from co-resident components.
+
+## AgenTEE Design
+
+AgenTEE organizes the entire agent pipeline within the realm world of Arm CCA. The **agent runtime**, **inference worker**, and **third-party applications** each run in a separate cVM, attested independently by their respective owners.
+
+<Figure>
+  <Picture
+    slot="figure"
+    src="../assets/agentee-pipeline.png"
+    alt="AgenTEE pipeline showing agent runtime, inference engine, and third-party applications in separate confidential VMs communicating via CAEC confidential shared memory"
+  />
+  <Fragment slot="caption">
+    **Figure 1.** AgenTEE pipeline. The agent runtime, inference engine, and third-party applications each run in independently attested confidential VMs (realms). Inter-realm communication uses CAEC Confidential Shared Memory (CSM), which is inaccessible to the hypervisor and normal-world OS.
+  </Fragment>
+</Figure>
+
+### Initialization and Attestation
+
+1. Each stakeholder (agent provider, model provider, application provider) deploys its component into a dedicated realm using standard CCA initialization.
+2. Upon launch, each realm establishes a TLS connection with its owner and provides an **RMM-signed attestation token** — cryptographic proof of the expected software stack.
+3. Once verified, owners securely transmit proprietary assets (model weights, agent code, API credentials) to their realm over the attested channel.
+
+### Inter-cVM Communication via CAEC
+
+AgenTEE integrates **CAEC** (Confidential Agent Execution Channels) to provide **Confidential Shared Memory (CSM)** between realms — hypervisor-inaccessible memory regions that enable peer realms to exchange data without exposing plaintext to the normal-world OS or hypervisor. CAEC's inter-realm attestation protocol ensures communication only occurs between verified and authorized realms.
+
+A lightweight 184-line Python module abstracts CSM usage for user space, partitioning each inter-realm CSM region into logical half-duplex channels for structured message passing.
+
+## Evaluation
+
+We evaluate AgenTEE on a **Radxa Rock 5B** (ROCK5B) embedded hardware platform running OpenCCA, comparing three isolation configurations:
+
+| Configuration | Isolation Level |
+|---|---|
+| **AgenTEE** | Agent runtime + inference engine in separate cVMs via CSM; entire normal-world untrusted |
+| **Normal-world VMs** | Two VMs via shared memory; hypervisor trusted |
+| **Normal-world processes (baseline)** | Two processes via shared memory; OS and hypervisor trusted |
+
+We test two agents (chatbot, itinerary planner) across two models (GPT2-Medium, Llama-3.2-1B).
+
+<Figure>
+  <Picture
+    slot="figure"
+    src="../assets/agentee-results.png"
+    alt="Performance evaluation results showing AgenTEE overhead vs normal-world VMs and processes"
+  />
+  <Fragment slot="caption">
+    **Figure 2.** End-to-end latency of AgenTEE vs. normal-world VM and process baselines across both agents and both models. AgenTEE achieves less than 5.15% overhead vs. native processes and less than 2.53% vs. normal-world VMs.
+  </Fragment>
+</Figure>
+
+### Key Results
+
+- **&lt; 5.15% overhead** vs. native OS processes (the strongest isolation vs. weakest baseline comparison)
+- **&lt; 2.53% overhead** vs. normal-world VMs
+- Near-native performance across all agent types and model sizes
+
+These results demonstrate that confidential edge LLM agent execution is practical today. Upcoming CCA extensions will support secure assignment of hardware accelerators to realms, enabling hardware-accelerated token generation within AgenTEE.
+
+## BibTeX
+
+```bibtex
+@inproceedings{abdollahi2026agentee,
+  title     = {{AgenTEE}: Confidential {LLM} Agent Execution on Edge Devices},
+  author    = {Abdollahi, Sina and Maheri, Mohammad M and Forough, Javad and
+               Al Sadi, Amir and Millar, Josh and Kotz, David and
+               Kogias, Marios and Haddadi, Hamed},
+  booktitle = {Sixth European Workshop on Machine Learning and Systems (EuroMLSys '26)},
+  year      = {2026},
+  doi       = {10.1145/3805621.3807660}
+}
+```
