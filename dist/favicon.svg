@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Shield representing TEE/security -->
+  <path d="M64 8 L104 24 L104 64 C104 88 84 108 64 120 C44 108 24 88 24 64 L24 24 Z" fill="none" stroke="#000" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Chip / processor icon inside shield -->
+  <rect x="46" y="46" width="36" height="36" rx="4" fill="#000"/>
+  <rect x="52" y="52" width="24" height="24" rx="2" fill="none" stroke="#fff" stroke-width="2"/>
+  <!-- Chip pins left/right -->
+  <line x1="40" y1="54" x2="46" y2="54" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <line x1="40" y1="64" x2="46" y2="64" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <line x1="40" y1="74" x2="46" y2="74" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <line x1="82" y1="54" x2="88" y2="54" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <line x1="82" y1="64" x2="88" y2="64" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <line x1="82" y1="74" x2="88" y2="74" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <style>
+    path, rect, line { stroke-color: #000; }
+    @media (prefers-color-scheme: dark) {
+      path { stroke: #FFF; }
+      rect:first-of-type { fill: #FFF; }
+      line { stroke: #FFF; }
+    }
+  </style>
+</svg>

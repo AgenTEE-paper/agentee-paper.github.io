@@ -36,6 +36,8 @@ thumbnail: screenshot-light.png
 import HighlightedSection from "./components/HighlightedSection.astro";
 import Figure from "./components/Figure.astro";
 import Picture from "./components/Picture.astro";
+import pipelineImg from "./assets/agentee-pipeline.png";
+import resultsImg from "./assets/agentee-results.png";
 
 <HighlightedSection>
 
@@ -68,7 +70,7 @@ AgenTEE organizes the entire agent pipeline within the realm world of Arm CCA. T
 <Figure>
   <Picture
     slot="figure"
-    src="../assets/agentee-pipeline.png"
+    src={pipelineImg}
     alt="AgenTEE pipeline showing agent runtime, inference engine, and third-party applications in separate confidential VMs communicating via CAEC confidential shared memory"
   />
   <Fragment slot="caption">
@@ -103,7 +105,7 @@ We test two agents (chatbot, itinerary planner) across two models (GPT2-Medium, 
 <Figure>
   <Picture
     slot="figure"
-    src="../assets/agentee-results.png"
+    src={resultsImg}
     alt="Performance evaluation results showing AgenTEE overhead vs normal-world VMs and processes"
   />
   <Fragment slot="caption">
