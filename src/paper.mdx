@@ -74,6 +74,7 @@ AgenTEE organizes the entire agent pipeline within the realm world of Arm CCA. T
     slot="figure"
     src="../assets/AgenTEE_main.pdf"
     alt="AgenTEE pipeline showing agent runtime, inference engine, and third-party applications in separate confidential VMs communicating via CAEC confidential shared memory"
+    class="max-w-[38%] w-auto"
   />
   <Fragment slot="caption">
     **Figure 1.** AgenTEE pipeline. The agent runtime, inference engine, and third-party applications each run in independently attested confidential VMs (realms). Inter-realm communication uses CAEC Confidential Shared Memory (CSM), which is inaccessible to the hypervisor and normal-world OS.
@@ -109,6 +110,7 @@ We test two agents (chatbot, itinerary planner) across two models (GPT2-Medium, 
     slot="figure"
     src="../assets/AgenTEEresults.pdf"
     alt="Performance evaluation results showing AgenTEE overhead vs normal-world VMs and processes"
+    class="max-w-[70%] w-auto"
   />
   <Fragment slot="caption">
     **Figure 2.** End-to-end latency of AgenTEE vs. normal-world VM and process baselines across both agents and both models. AgenTEE achieves less than 5.15% overhead vs. native processes and less than 2.53% vs. normal-world VMs.
