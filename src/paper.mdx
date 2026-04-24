@@ -59,11 +59,11 @@ Current OS-level isolation (multi-processing, syscall filtering) is inadequate w
 
 ### Assets Requiring Protection
 
-AgenTEE identifies three classes of sensitive assets that require hardware-level protection:
+AgenTEE identifies three classes of sensitive assets that require hardware-enforced protection:
 
 - **Agent code and prompts:** Proprietary orchestration logic, prompt templates, and decision rules. Even partial leakage significantly increases the feasibility of prompt injection and data exfiltration attacks.
 - **Inference engine:** Model weights (proprietary or integrity-sensitive) and the KV cache, which encodes processed context and can leak system prompts or be manipulated to steer model behavior.
-- **Third-party applications:** API keys, database credentials, authentication tokens, and proprietary business logic that must be protected even from co-resident components.
+- **Third-party applications:** API keys, authentication tokens, and proprietary business logic that must be protected even from co-resident components.
 
 ## AgenTEE Design
 
@@ -89,7 +89,7 @@ AgenTEE organizes the entire agent pipeline within the realm world of Arm CCA. T
 
 ### Inter-cVM Communication via CAEC
 
-AgenTEE integrates **CAEC** (Confidential Agent Execution Channels) to provide **Confidential Shared Memory (CSM)** between realms — hypervisor-inaccessible memory regions that enable peer realms to exchange data without exposing plaintext to the normal-world OS or hypervisor. CAEC's inter-realm attestation protocol ensures communication only occurs between verified and authorized realms.
+AgenTEE integrates [**CAEC**](https://caec-paper.github.io/) to provide **Confidential Shared Memory (CSM)** between realms — hypervisor-inaccessible memory regions that enable peer realms to exchange data without exposing plaintext to the normal-world OS or hypervisor. CAEC's inter-realm attestation protocol ensures communication only occurs between verified and authorized realms.
 
 A lightweight 184-line Python module abstracts CSM usage for user space, partitioning each inter-realm CSM region into logical half-duplex channels for structured message passing.
 
@@ -110,7 +110,7 @@ We test two agents (chatbot, itinerary planner) across two models (GPT2-Medium, 
     slot="figure"
     src="../assets/AgenTEEresults.pdf"
     alt="Performance evaluation results showing AgenTEE overhead vs normal-world VMs and processes"
-    class="max-w-[70%] w-auto"
+    class="max-w-[80%] w-auto"
   />
   <Fragment slot="caption">
     **Figure 2.** End-to-end latency of AgenTEE vs. normal-world VM and process baselines across both agents and both models. AgenTEE achieves less than 5.15% overhead vs. native processes and less than 2.53% vs. normal-world VMs.
@@ -128,13 +128,10 @@ These results demonstrate that confidential edge LLM agent execution is practica
 ## BibTeX
 
 ```bibtex
-@inproceedings{abdollahi2026agentee,
-  title     = {{AgenTEE}: Confidential {LLM} Agent Execution on Edge Devices},
-  author    = {Abdollahi, Sina and Maheri, Mohammad M and Forough, Javad and
-               Al Sadi, Amir and Millar, Josh and Kotz, David and
-               Kogias, Marios and Haddadi, Hamed},
-  booktitle = {Sixth European Workshop on Machine Learning and Systems (EuroMLSys '26)},
-  year      = {2026},
-  doi       = {10.1145/3805621.3807660}
+@article{abdollahi2026agentee,
+  title={{AgenTEE: Confidential LLM Agent Execution on Edge Devices}},
+  author={Abdollahi, Sina and Maheri, Mohammad M and Forough, Javad and Sadi, Amir Al and Millar, Josh and Kotz, David and Kogias, Marios and Haddadi, Hamed},
+  journal={arXiv preprint arXiv:2604.18231},
+  year={2026}
 }
 ```
