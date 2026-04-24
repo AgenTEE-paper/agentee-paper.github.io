@@ -21,12 +21,14 @@ if (typeof src === "string") {
 }
 ---
 
-<AstroPicture
-  class={`rounded-lg max-h-[calc(100svh-3rem)] mx-auto ${invertInDarkMode ? "dark:invert" : ""} ${className || "max-w-full w-min"}`}
-  src={image}
-  alt={alt}
-  layout="constrained"
-  formats={["avif"]}
-  priority={priority}
-  fit="contain"
-/>
+<div class={`mx-auto ${className || "w-min"}`}>
+  <AstroPicture
+    class={`rounded-lg max-h-[calc(100svh-3rem)] w-full ${invertInDarkMode ? "dark:invert" : ""}`}
+    src={image}
+    alt={alt}
+    layout="full-width"
+    formats={["avif"]}
+    priority={priority}
+    fit="contain"
+  />
+</div>
